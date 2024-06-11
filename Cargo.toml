@@ -12,3 +12,4 @@ edition = "2018"
 panic = "abort" # disable stack unwinding on panic
 
 [dependencies]
+bootloader = "0.9"
