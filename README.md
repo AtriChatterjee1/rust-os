@@ -1,6 +1,6 @@
 # Creating an Operating System on Rust
 
-This project aims to build a minimalistic Operating System on Rust programming language.
+This project aims to build a minimalistic Operating System on [Rust programming language](https://www.rust-lang.org/).
 
 Why Rust? 
 - Its low-level with memory safety implemented,
