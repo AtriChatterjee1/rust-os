@@ -1,8 +1,12 @@
-This project aims to build a minimalistic Operating System on Rust.
+# Creating an Operating System on Rust
+
+This project aims to build a minimalistic Operating System on Rust programming language.
 
 Why Rust? 
 - Its low-level with memory safety implemented,
 - Extremely fast (low latency)
+
+Currently has only BIOS support, will add UEFI support progressively!
 
 ## How to Replicate 
 
@@ -18,6 +22,7 @@ cargo install bootimage
 cargo bootimage
 ```
 This would give you an output of the form : 
+
 ![image](https://github.com/AtriChatterjee1/rust-os/assets/112633183/942dd7a5-7b91-4198-ac5f-5fa47031d045)
 
 Now run the following command, to print hello-world.
