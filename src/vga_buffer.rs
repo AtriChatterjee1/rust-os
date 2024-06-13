@@ -1,5 +1,8 @@
 
 use volatile::Volatile;
+use core::fmt;
+use lazy_static::lazy_static;
+use spin::Mutex;
 
 #[allow(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -55,7 +58,7 @@ pub struct Writer {
     buffer: &'static mut Buffer,
 }
 
-use core::fmt;
+
 
 impl fmt::Write for Writer {
     fn write_str(&mut self, s: &str) -> fmt::Result {
@@ -63,6 +66,7 @@ impl fmt::Write for Writer {
         Ok(())
     }
 }
+
 
 impl Writer {
     pub fn write_byte(&mut self, byte: u8) {
@@ -83,6 +87,17 @@ impl Writer {
                 });
                 self.column_position += 1;
             }
+        }
+    }
+    pub fn write_string(&mut self, s: &str) {
+        for byte in s.bytes() {
+            match byte {
+                // printable ASCII byte or newline
+                0x20..=0x7e | b'\n' => self.write_byte(byte),
+                // not part of printable ASCII range
+                _ => self.write_byte(0xfe),
+            }
+
         }
     }
 
@@ -112,41 +127,49 @@ impl Writer {
     }
 }
 
-impl Writer {
-    pub fn write_string(&mut self, s: &str) {
-        for byte in s.bytes() {
-            match byte {
-                // printable ASCII byte or newline
-                0x20..=0x7e | b'\n' => self.write_byte(byte),
-                // not part of printable ASCII range
-                _ => self.write_byte(0xfe),
-            }
-
-        }
-    }
-}
-
-pub fn print_something() {
-    use core::fmt::Write;
-    let mut writer = Writer {
-        column_position: 0,
-        color_code: ColorCode::new(Color::Yellow, Color::Black),
-        buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
-    };
-
-    writer.write_byte(b'H');
-    writer.write_string("ello ");
-    writer.write_string("Wörld!");
-    write!(writer, "The numbers are {} and {}", 42, 1.0/3.0).unwrap();
-}
-
-use lazy_static::lazy_static;
-
 lazy_static! {
-    pub static ref WRITER: Writer = Writer {
+    pub static ref WRITER: Mutex<Writer> = Mutex::new(Writer {
         column_position: 0,
         color_code: ColorCode::new(Color::Yellow, Color::Black),
         buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
-    };
+    });
 }
+
+
+// pub fn print_something() {
+//     use core::fmt::Write;
+//     let mut writer = Writer {
+//         column_position: 0,
+//         color_code: ColorCode::new(Color::Yellow, Color::Black),
+//         buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
+//     };
+
+//     writer.write_byte(b'H');
+//     writer.write_string("ello ");
+//     writer.write_string("Wörld!");
+//     write!(writer, "The numbers are {} and {}", 42, 1.0/3.0).unwrap();
+// }
+
+// println macro
+
+#[macro_export]
+macro_rules! print {
+    ($($arg:tt)*) => ($crate::vga_buffer::_print(format_args!($($arg)*)));
+}
+
+#[macro_export]
+macro_rules! println {
+    () => ($crate::print!("\n"));
+    ($($arg:tt)*) => ($crate::print!("{}\n", format_args!($($arg)*)));
+}
+
+#[doc(hidden)]
+pub fn _print(args: fmt::Arguments) {
+    use core::fmt::Write;
+    WRITER.lock().write_fmt(args).unwrap();
+}
+
+
+
+
 
