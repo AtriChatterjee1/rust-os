@@ -25,3 +25,4 @@ features = ["spin_no_std"] # We need the spin_no_std feature, since we don’t l
 
 [package.metadata.bootimage]
 test-args = ["-device", "isa-debug-exit,iobase=0xf4,iosize=0x04"] # exiting the qemu without user interaction
+test-success-exit-code = 33   # (0x10 << 1) | 1 = 0x101
