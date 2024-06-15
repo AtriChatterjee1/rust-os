@@ -28,15 +28,22 @@ This would give you an output of the form :
 Now run the following command, to print hello-world.
 
 ```
-qemu-system-x86_64 -drive format=raw,file=[file_location]
-```
-Replace ``` file_location``` with the location of your location of bootimage generated from ``` cargo bootimage ```
-An example would look like : 
-
-```
-qemu-system-x86_64 -drive format=raw,file=target/target/debug/bootimage-rust_os.bin
+cargo run
 ```
 
 This would print out Hello World on your Qemu emulator display. 
+
+To run tests run 
+```
+cargo test 
+```
+
+or if you'd like to run a specific test file use this command 
+
+```
+cargo test --test [file_name]
+cargo test --test should_panic     // example
+```
+Be careful while running should_panic, as it gives sucess when the test panicks, and fails when all tests run fine!
 
 Thanks for checking out this repository, if you'd find this insightful, do star the repo!
