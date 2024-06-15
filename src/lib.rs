@@ -2,12 +2,13 @@
 #![cfg_attr(test, no_main)]// disable all Rust-level entry points
 #![feature(custom_test_frameworks)]
 #![test_runner(crate::test_runner)]
-
+#![feature(abi_x86_interrupt)]
 #![reexport_test_harness_main = "test_main"] // test-framework entry function
 
 use core::panic::PanicInfo;
 pub mod serial;
 pub mod vga_buffer;
+pub mod interrupts;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u32)]
@@ -55,6 +56,10 @@ pub fn test_panic_handler(info : &PanicInfo) -> !{
     serial_println!("Error : {}" , info);
     exit_qemu(QemuExitCode::Failed);
     loop{};
+}
+
+pub fn init() {
+    interrupts::init_idt();
 }
 
 #[cfg(test)]
