@@ -6,12 +6,13 @@
 #![reexport_test_harness_main = "test_main"] // test-framework entry function
 
 use core::panic::PanicInfo;
+
 mod vga_buffer;
 mod serial;
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
-    println!("Hello World{}", "!");
+    // println!("Hello World{}", "!");
     #[cfg(test)]
     test_main();
 
@@ -82,6 +83,13 @@ pub fn test_runner(tests: &[&dyn Testable]) {
 fn trivial_assertion() {  
     assert_eq!(1, 1);
 }
+
+#[test_case]
+fn test_buffer(){
+    println!("Hello World!");
+}
+
+
 
 
 

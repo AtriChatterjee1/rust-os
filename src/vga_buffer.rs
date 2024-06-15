@@ -169,6 +169,15 @@ pub fn _print(args: fmt::Arguments) {
     WRITER.lock().write_fmt(args).unwrap();
 }
 
+#[test_case]
+fn tested_lines_on_screen(){
+    let s = "Some string" ;
+    println!("{}",s);
+    for (i,c) in s.chars().enumerate(){
+        let screen_char = WRITER.lock().buffer.chars[BUFFER_HEIGHT - 2][i].read();
+        assert_eq!(char::from(screen_char.ascii_character),c);
+    }
+}
 
 
 
