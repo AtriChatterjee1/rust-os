@@ -16,6 +16,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Adding dependency
+      run : rustup component add llvm-tools-preview
     - name: Adding Target
       run: rustup target add target
     - name: Build
