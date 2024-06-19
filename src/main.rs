@@ -5,6 +5,8 @@
 #![reexport_test_harness_main = "test_main"] // test-framework entry function
 
 use core::panic::PanicInfo;
+use x86_64::PhysAddr;
+
 
 use rust_os::println;
 use bootloader::{BootInfo,entry_point};
@@ -12,28 +14,31 @@ use bootloader::{BootInfo,entry_point};
 entry_point!(kernel_main);
 
 fn kernel_main(boot_info: &'static BootInfo) -> ! {
-    use rust_os::memory::active_level_4_table;
-    use x86_64::VirtAddr;
+    use rust_os::memory;
+    use x86_64::{structures::paging::Translate, VirtAddr};
 
     println!("Hello World{}", "!");
     rust_os::init();
 
     let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
-    let l4_table = unsafe { active_level_4_table(phys_mem_offset) };
+    let mapper = unsafe { memory::init(phys_mem_offset) };
 
-    for (i, entry) in l4_table.iter().enumerate() {
-        if !entry.is_unused() {
-            println!("L4 Entry {}: {:?}", i, entry);
-        }
+    let addresses = [
+        // the identity-mapped vga buffer page
+        0xb8000,
+        // some code page
+        0x201008,
+        // some stack page
+        0x0100_0020_1a10,
+        // virtual address mapped to physical address 0
+        boot_info.physical_memory_offset,
+    ];
+
+    for &address in &addresses {
+        let virt = VirtAddr::new(address);
+        let phys = mapper.translate_addr(virt);
+        println!("{:?} -> {:?}", virt, phys);
     }
- 
-
-    // use x86_64::registers::control::Cr3;
-
-    // let (level_4_page_table, _) = Cr3::read();
-    // println!("Level 4 page table at: {:?}", level_4_page_table.start_address());
-    // // invoke a breakpoint exception
-    // x86_64::instructions::interrupts::int3(); 
     #[cfg(test)]
     test_main();
 
