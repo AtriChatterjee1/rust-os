@@ -26,6 +26,6 @@ jobs:
     - name: Adding target 
       run: rustup target add x86_64-unknown-none
     - name: Build
-      run: cargo build --target path/to/your/target.json
+      run: cargo build --target target.json
     - name: Run tests
       run: cargo test
