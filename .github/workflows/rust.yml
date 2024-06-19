@@ -18,6 +18,8 @@ jobs:
     - uses: actions/checkout@v4
     - name: Adding dependency
       run : rustup component add llvm-tools-preview
+    - name: rust-src
+      run: rustup component add rust-src
     - name: Adding bootimage
       run: cargo install bootimage
     - name: Build
