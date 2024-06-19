@@ -6,6 +6,7 @@
 #![reexport_test_harness_main = "test_main"] // test-framework entry function
 
 use core::panic::PanicInfo;
+extern crate alloc;
 #[cfg(test)]
 use bootloader::{entry_point, BootInfo};
 pub mod serial;
@@ -13,6 +14,8 @@ pub mod vga_buffer;
 pub mod interrupts;
 pub mod gdt;
 pub mod memory;
+pub mod allocator;
+
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u32)]
