@@ -16,6 +16,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Adding Target
+      run: rustup target add target
     - name: Build
       run: cargo build --verbose
     - name: Run tests
