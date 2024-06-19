@@ -6,10 +6,13 @@
 #![reexport_test_harness_main = "test_main"] // test-framework entry function
 
 use core::panic::PanicInfo;
+#[cfg(test)]
+use bootloader::{entry_point, BootInfo};
 pub mod serial;
 pub mod vga_buffer;
 pub mod interrupts;
 pub mod gdt;
+pub mod memory;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u32)]
@@ -60,9 +63,11 @@ pub fn test_panic_handler(info : &PanicInfo) -> !{
 }
 
 #[cfg(test)]
-#[no_mangle]
+entry_point!(test_kernel_main);
 
-pub extern "C" fn _start() -> !{
+#[cfg(test)]
+fn test_kernel_main(_boot_info : &'static BootInfo) -> !{
+
     init();
     test_main();
     hlt_loop();
